@@ -1,0 +1,43 @@
+server:
+  port: 8222
+spring:
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: "http://localhost:9090/realms/project-management-micro-service"
+
+
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: customer-service
+          uri: lb:http://CUSTOMER-SERVICE
+          predicates:
+            - Path=/api/v1/customers/**
+
+        - id: demand-service
+          uri: lb:http://DEMAND-SERVICE
+          predicates:
+            - Path=/api/v1/orders/**
+        - id: order-lines-service
+          uri: lb:http://DEMAND-SERVICE
+          predicates:
+            - Path=/api/v1/order-lines/**
+
+        - id: ticket-service
+          uri: lb:http://TICKET-SERVICE
+          predicates:
+            - Path=/api/v1/tickets/**
+        - id: payment-service
+          uri: lb:http://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/v1/payments/**
+  filters:
+    - AddResponseHeader=Access-Control-Allow-Origin, http://localhost:4200
+    - AddResponseHeader=Access-Control-Allow-Methods, GET, POST, PUT, DELETE, OPTIONS
+    - AddResponseHeader=Access-Control-Allow-Headers, Authorization, Content-Type
